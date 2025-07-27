@@ -375,6 +375,7 @@ function loadLevel(levelIndex) {
         letterDiv.textContent = letterChar;
         letterDiv.dataset.letter = letterChar;
         letterDiv.addEventListener('mousedown', handleLetterMouseDown);
+        letterDiv.addEventListener('touchstart', handleLetterTouchStart, {passive: false});
         lettersContainer.appendChild(letterDiv);
         letterDivs.push(letterDiv);
     });
@@ -460,8 +461,10 @@ function createLevelSelectionButtons() {
 // --- Dragging Event Handlers ---
 
 function handleLetterMouseDown(event) {
+    // Only handle mouse events
+    if (event.type !== 'mousedown') return;
     if (event.button !== 0) return;
-    if (isHintMode) { // Prevent dragging in hint mode
+    if (isHintMode) {
         setMessage('Click a letter box to reveal a hint!', 'info');
         return;
     }
@@ -472,18 +475,35 @@ function handleLetterMouseDown(event) {
     document.addEventListener('mouseup', handleDocumentMouseUp);
 }
 
+function handleLetterTouchStart(event) {
+    // Only handle touch events
+    if (event.type !== 'touchstart') return;
+    if (isHintMode) {
+        setMessage('Tap a letter box to reveal a hint!', 'info');
+        return;
+    }
+    isDragging = true;
+    clearSelection();
+    addLetterToSelection(event.target);
+    document.addEventListener('touchmove', handleDocumentTouchMove, {passive: false});
+    document.addEventListener('touchend', handleDocumentTouchEnd);
+}
+
+// ...existing code...
 function handleDocumentMouseMove(event) {
     if (!isDragging) return;
-
+    if (!event) return;
+    const mouseX = event.clientX;
+    const mouseY = event.clientY;
     const containerRect = lettersContainer.getBoundingClientRect();
-    const mouseX = event.clientX - containerRect.left;
-    const mouseY = event.clientY - containerRect.top;
+    const relX = mouseX - containerRect.left;
+    const relY = mouseY - containerRect.top;
 
     if (selectedLetters.length > 0) {
-        drawLine(selectedLetters[selectedLetters.length - 1], mouseX, mouseY);
+        drawLine(selectedLetters[selectedLetters.length - 1], relX, relY);
     }
 
-    const hoveredElement = document.elementFromPoint(event.clientX, event.clientY);
+    const hoveredElement = document.elementFromPoint(mouseX, mouseY);
 
     // Undo logic - if hovering over the previously selected letter (but not the first)
     if (selectedLetters.length > 1 && hoveredElement === selectedLetters[selectedLetters.length - 2]) {
@@ -493,7 +513,7 @@ function handleDocumentMouseMove(event) {
         const lastLetterCenter = getElementCenter(lastLetterDiv);
         const prevLetterCenter = getElementCenter(prevLetterDiv);
 
-        const mouseToPrevCenterDistance = getDistance({x: mouseX, y: mouseY}, prevLetterCenter);
+        const mouseToPrevCenterDistance = getDistance({x: relX, y: relY}, prevLetterCenter);
         const threshold = lastLetterDiv.offsetWidth * 0.7;
 
         if (mouseToPrevCenterDistance < threshold) {
@@ -502,7 +522,7 @@ function handleDocumentMouseMove(event) {
             currentWord = currentWord.slice(0, -1);
             currentWordDisplay.textContent = currentWord;
             setMessage('', 'info');
-            
+
             if (selectedLetters.length > 0) {
                 const newLastLetterCenter = getElementCenter(selectedLetters[selectedLetters.length - 1]);
                 drawLine(selectedLetters[selectedLetters.length - 1], newLastLetterCenter.x, newLastLetterCenter.y);
@@ -516,7 +536,6 @@ function handleDocumentMouseMove(event) {
     // Standard add letter logic: if new valid letter is hovered
     if (hoveredElement && hoveredElement.classList.contains('letter') &&
         !selectedLetters.includes(hoveredElement)) {
-        
         addLetterToSelection(hoveredElement);
     }
 }
@@ -526,6 +545,66 @@ function handleDocumentMouseUp(event) {
         isDragging = false;
         document.removeEventListener('mousemove', handleDocumentMouseMove);
         document.removeEventListener('mouseup', handleDocumentMouseUp);
+        submitWord();
+        ctx.clearRect(0, 0, connectionCanvas.width, connectionCanvas.height); // Clear final lines
+    }
+}
+
+function handleDocumentTouchMove(event) {
+    if (!isDragging) return;
+    event.preventDefault(); // Prevent scrolling while dragging
+    if (!event.touches || event.touches.length === 0) return;
+    const touch = event.touches[0];
+    const containerRect = lettersContainer.getBoundingClientRect();
+    const touchX = touch.clientX - containerRect.left;
+    const touchY = touch.clientY - containerRect.top;
+
+    if (selectedLetters.length > 0) {
+        drawLine(selectedLetters[selectedLetters.length - 1], touchX, touchY);
+    }
+
+    const hoveredElement = document.elementFromPoint(touch.clientX, touch.clientY);
+
+    // Undo logic - if hovering over the previously selected letter (but not the first)
+    if (selectedLetters.length > 1 && hoveredElement === selectedLetters[selectedLetters.length - 2]) {
+        const lastLetterDiv = selectedLetters[selectedLetters.length - 1];
+        const prevLetterDiv = selectedLetters[selectedLetters.length - 2];
+
+        const lastLetterCenter = getElementCenter(lastLetterDiv);
+        const prevLetterCenter = getElementCenter(prevLetterDiv);
+
+        const touchToPrevCenterDistance = getDistance({x: touchX, y: touchY}, prevLetterCenter);
+        const threshold = lastLetterDiv.offsetWidth * 0.7;
+
+        if (touchToPrevCenterDistance < threshold) {
+            const poppedLetterDiv = selectedLetters.pop();
+            poppedLetterDiv.classList.remove('selected');
+            currentWord = currentWord.slice(0, -1);
+            currentWordDisplay.textContent = currentWord;
+            setMessage('', 'info');
+
+            if (selectedLetters.length > 0) {
+                const newLastLetterCenter = getElementCenter(selectedLetters[selectedLetters.length - 1]);
+                drawLine(selectedLetters[selectedLetters.length - 1], newLastLetterCenter.x, newLastLetterCenter.y);
+            } else {
+                ctx.clearRect(0, 0, connectionCanvas.width, connectionCanvas.height);
+            }
+            return;
+        }
+    }
+
+    // Standard add letter logic: if new valid letter is hovered
+    if (hoveredElement && hoveredElement.classList.contains('letter') &&
+        !selectedLetters.includes(hoveredElement)) {
+        addLetterToSelection(hoveredElement);
+    }
+}
+
+function handleDocumentTouchEnd(event) {
+    if (isDragging) {
+        isDragging = false;
+        document.removeEventListener('touchmove', handleDocumentTouchMove);
+        document.removeEventListener('touchend', handleDocumentTouchEnd);
         submitWord();
         ctx.clearRect(0, 0, connectionCanvas.width, connectionCanvas.height); // Clear final lines
     }
