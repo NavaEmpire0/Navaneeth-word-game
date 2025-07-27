@@ -1,0 +1,460 @@
+/* General Body and Container Styles */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px; /* Add some padding for smaller screens */
+    box-sizing: border-box; /* Include padding in element's total width and height */
+    overflow-y: auto;
+}
+
+#game-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+    margin: 20px 0;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* Logo specific style */
+#game-view h1 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 2em;
+    color: #333;
+}
+
+
+/* View Management */
+.active-view {
+    display: block;
+}
+
+.hidden-view {
+    display: none;
+}
+
+/* Level Info */
+#level-info {
+    font-size: 1.1em;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* Target Words Display (Empty Boxes) */
+#target-words-display {
+    margin: 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.target-word {
+    display: flex;
+    gap: 2px;
+    margin: 5px 0;
+}
+
+.target-letter {
+    width: 30px;
+    height: 30px;
+    border: 1px dashed #aaa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+    background-color: #f8f8f8;
+    border-radius: 3px;
+}
+
+.target-letter.filled {
+    border: 1px solid #28a745;
+    background-color: #e9ffe9;
+}
+
+
+/* Letters Container and Canvas for Dragging */
+#letters-container {
+    position: relative;
+    width: 300px; /* Default size, will be adjusted by JS */
+    height: 300px; /* Default size, will be adjusted by JS */
+    margin: 40px auto;
+    border: 1px solid #eee;
+    border-radius: 50%;
+    box-sizing: border-box;
+    display: block;
+}
+
+.letter {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e0e0e0;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #333;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.1s, border-color 0.1s, transform 0.1s;
+    position: absolute;
+    z-index: 10;
+
+    /* UPDATED: Centering using negative margins instead of transform: translate */
+    /* top and left will be set in JS to the desired center point */
+    margin-left: -30px; /* Half of width (60px / 2) */
+    margin-top: -30px; /* Half of height (60px / 2) */
+    /* Removed transform: translate(-50%, -50%); from here */
+}
+
+.letter.selected {
+    background-color: #a0d0ff;
+    border-color: #60a0ff;
+    /* UPDATED: Only scale now, no translate needed here */
+    transform: scale(1.1);
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Canvas for drawing connection lines */
+#connection-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Crucial: Allows mouse events to pass through to letters below */
+    z-index: 5; /* Should be below letters (z-index: 10) */
+    border-radius: 50%;
+}
+
+
+/* Current Word Display */
+#current-word-display {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 20px;
+    min-height: 1.5em;
+    background-color: #f8f8f8;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px dashed #ddd;
+}
+
+/* Message Area */
+#message-area {
+    margin-top: 20px;
+    font-weight: bold;
+    min-height: 1.2em;
+    color: #d9534f;
+}
+
+/* Specific message types */
+#message-area.success {
+    color: #28a745;
+}
+#message-area.info {
+    color: #17a2b8;
+}
+
+
+/* Always Visible Controls */
+#always-visible-controls {
+    margin-top: 20px;
+    margin-bottom: 25px;
+    display: flex; /* Make it a flex container to easily space buttons */
+    flex-wrap: wrap; /* Allow buttons to wrap */
+    justify-content: center;
+    gap: 10px; /* Slightly smaller gap to fit 3 buttons */
+}
+
+#select-level-button {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #6c757d;
+    color: white;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+#select-level-button:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+}
+
+/* Style for Reveal Button */
+#reveal-button {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffc107; /* Yellowish/orange color */
+    color: #333;
+    font-weight: bold;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+#reveal-button:hover:not(:disabled) { /* Hover only if not disabled */
+    background-color: #e0a800;
+    transform: translateY(-2px);
+}
+
+#reveal-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Style for How to Play Button (similar to Select Level) */
+#how-to-play-button {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #6c757d; /* Grey color */
+    color: white;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+#how-to-play-button:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+}
+
+
+/* Cursor when in hint mode */
+body.hint-mode {
+    cursor: help; /* A helpful cursor to indicate hint mode */
+}
+
+.target-letter:not(.filled).hint-active:hover {
+    /* Style for unfound letters when hint button is active and hovering */
+    background-color: #fffacd; /* Light goldenrod yellow */
+    border-color: #ffc107;
+    cursor: pointer;
+}
+
+
+/* Next Level Area */
+#next-level-area {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+#next-level-button {
+    padding: 12px 20px;
+    margin: 5px;
+    font-size: 1em;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+#next-level-button:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+
+/* Level Selection View */
+#level-selection-view h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+#level-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px 0;
+}
+
+#level-buttons button {
+    padding: 15px 25px;
+    font-size: 1.2em;
+    min-width: 120px;
+    background-color: #6c757d;
+    border: 1px solid #5a6268;
+    color: white;
+    border-radius: 8px;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+#level-buttons button:hover {
+    background-color: #545b62;
+    transform: translateY(-2px);
+}
+
+/* Completed Level Button Style */
+#level-buttons button.completed-level {
+    background-color: #28a745;
+    border-color: #218838;
+}
+
+#level-buttons button.completed-level:hover {
+    background-color: #218838;
+}
+
+
+/* Back to Current Game Button (within Level Selection View) */
+#back-to-game-button {
+    padding: 12px 20px;
+    margin: 20px auto;
+    font-size: 1em;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    display: block;
+    max-width: 250px;
+}
+
+#back-to-game-button:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+
+/* How to Play Overlay Styles */
+#how-to-play-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Dark overlay */
+    display: none; /* MODIFIED: Hidden by default */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Above all other content */
+    overflow-y: auto; /* Allow scrolling if content is too tall */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#how-to-play-overlay.visible {
+    display: flex; /* ADDED: This makes it appear */
+}
+
+#how-to-play-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+#how-to-play-content h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+#how-to-play-content p {
+    color: #555;
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+#how-to-play-content strong {
+    color: #007bff;
+}
+
+#close-how-to-play-button {
+    margin-top: 25px;
+    padding: 12px 30px;
+    font-size: 1.1em;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.2s, transform 0.1s;
+    /* Reverted aggressive debugging styles back to normal */
+    z-index: auto; /* Revert z-index to normal */
+    pointer-events: auto; /* Revert pointer-events to normal */
+    position: static; /* Revert position to static */
+    background-color: #007bff; /* Revert background color */
+    border: none; /* Revert border */
+}
+
+#close-how-to-play-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+
+/* Basic Responsiveness */
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    #game-container {
+        padding: 15px;
+        margin: 10px 0;
+    }
+    .letter {
+        width: 50px;
+        height: 50px;
+        font-size: 1.6em;
+    }
+    #letters-container {
+        width: 250px;
+        height: 250px;
+    }
+    #current-word-display {
+        font-size: 2em;
+        padding: 8px;
+    }
+    #always-visible-controls {
+        flex-direction: column; /* Stack buttons vertically on small screens */
+        gap: 10px;
+    }
+    #select-level-button, #reveal-button, #how-to-play-button {
+        width: 80%; /* Make buttons wider */
+        margin: 0 auto;
+    }
+    .target-letter {
+        width: 25px;
+        height: 25px;
+        font-size: 1em;
+    }
+    #level-buttons button {
+        padding: 10px 15px;
+        font-size: 1em;
+        min-width: 100px;
+    }
+}

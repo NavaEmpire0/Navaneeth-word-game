@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navaneeth's Word Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="game-view" class="active-view">
+            <h1>Navaneeth's word game</h1>
+            <div id="level-info">Level: <span id="current-level">1</span></div>
+
+            <div id="target-words-display">
+                </div>
+
+            <div id="letters-container">
+                <div id="canvas-wrapper"></div> </div>
+
+            <div id="current-word-display"></div>
+
+            <div id="message-area"></div>
+
+            <div id="always-visible-controls">
+                <button id="select-level-button">Select Level</button>
+                <button id="reveal-button">Reveal Letter</button>
+                <button id="how-to-play-button">How to Play</button>
+            </div>
+
+            <div id="next-level-area" style="display: none;">
+                <button id="next-level-button">Next Level &raquo;</button>
+            </div>
+        </div>
+
+        <div id="level-selection-view" class="hidden-view">
+            <h1>Select a Level</h1>
+            <div id="level-buttons">
+                </div>
+            <button id="back-to-game-button">Back to Current Game</button>
+        </div>
+    </div>
+
+    <div id="how-to-play-overlay">
+        <div id="how-to-play-content">
+            <h2>How to Play Navaneeth's Word Game</h2>
+            <p><strong>1. Form Words:</strong> Drag your finger (or mouse) over adjacent letters to form words. You can only use each letter tile once per word. Release to submit.</p>
+            <p><strong>2. Find All Words:</strong> Your goal is to find all the hidden words displayed in the empty boxes above the letter wheel.</p>
+            <p><strong>3. Use Hints:</strong> Click the "Reveal Letter" button, then click an empty square to reveal one letter. Use hints wisely!</p>
+            <p><strong>4. Progress Through Levels:</strong> Complete levels to unlock the "Next Level" button, or use "Select Level" to jump to any puzzle.</p>
+            
+            <p><strong>Note:</strong> Every word in this game is at least 3 letters long.</p>
+            <img src="how_to_play.gif" alt="How to play word game" style="max-width: 100%; border-radius: 8px; margin-top: 15px;">
+            
+            <button id="close-how-to-play-button">Got it!</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
