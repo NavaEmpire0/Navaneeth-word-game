@@ -7,8 +7,8 @@ function shuffleArray(array) {
     return array;
 }
 
-// Word Game - 100 Levels (4 words for levels 1-20, 5 for 21-40, 6 for 41-60, 7 for 61-80, 8 for 81-100)
-
+// Word Game - 100 Levels
+// Levels are grouped by number of words to find per level.
 const levels = [
     { id: 0, mainWord: 'STREAM', wordsToFind: ['stream', 'master', 'team', 'arm'] },
     { id: 1, mainWord: 'BRIGHT', wordsToFind: ['bright', 'right', 'grit', 'bit'] },
@@ -116,40 +116,23 @@ const levels = [
     { id: 99, mainWord: 'MASTERPIECE', wordsToFind: ['masterpiece', 'cream', 'steam', 'car', 'ear', 'ice', 'pea', 'ape'] }
 ];
 
-let currentLevelIndex = 0;
-let selectedLetters = [];
-let currentWord = '';
-let foundWords = new Set();
-let allValidWords = new Set();
-let completedLevels = new Set(); // To track completed levels for highlighting
 
-let isDragging = false;
-let isHintMode = false; // State for hint mode
+// --- Game State ---
 
-// THESE WILL BE RE-DECLARED IN loadLevel FOR FRESHNESS
-let connectionCanvas;
-let ctx;
-
-const canvasWrapper = document.getElementById('canvas-wrapper'); // Reference to the wrapper div
-
-const gameView = document.getElementById('game-view');
-const levelSelectionView = document.getElementById('level-selection-view');
-
-const lettersContainer = document.getElementById('letters-container');
-const currentWordDisplay = document.getElementById('current-word-display');
-const targetWordsDisplay = document.getElementById('target-words-display');
-const messageArea = document.getElementById('message-area');
-const currentLevelSpan = document.getElementById('current-level');
-
-const nextLevelArea = document.getElementById('next-level-area');
-const nextLevelButton = document.getElementById('next-level-button');
-const selectLevelButton = document.getElementById('select-level-button');
-const levelButtonsContainer = document.getElementById('level-buttons');
-const backToGameButton = document.getElementById('back-to-game-button');
-const revealButton = document.getElementById('reveal-button'); // Reveal button reference
-const howToPlayButton = document.getElementById('how-to-play-button'); // How to Play button
-const howToPlayOverlay = document.getElementById('how-to-play-overlay'); // How to Play overlay
-const closeHowToPlayButton = document.getElementById('close-how-to-play-button'); // Close How to Play button
+// Game state and DOM elements
+let currentLevelIndex = 0, selectedLetters = [], currentWord = '',
+  foundWords = new Set(), allValidWords = new Set(), completedLevels = new Set(),
+  isDragging = false, isHintMode = false, connectionCanvas, ctx;
+const $ = id => document.getElementById(id);
+const canvasWrapper = $("canvas-wrapper"), gameView = $("game-view"),
+  levelSelectionView = $("level-selection-view"), lettersContainer = $("letters-container"),
+  currentWordDisplay = $("current-word-display"), targetWordsDisplay = $("target-words-display"),
+  messageArea = $("message-area"), currentLevelSpan = $("current-level"),
+  nextLevelArea = $("next-level-area"), nextLevelButton = $("next-level-button"),
+  selectLevelButton = $("select-level-button"), levelButtonsContainer = $("level-buttons"),
+  backToGameButton = $("back-to-game-button"), revealButton = $("reveal-button"),
+  howToPlayButton = $("how-to-play-button"), howToPlayOverlay = $("how-to-play-overlay"),
+  closeHowToPlayButton = $("close-how-to-play-button");
 
 
 // --- Utility Functions ---
@@ -489,7 +472,6 @@ function handleLetterTouchStart(event) {
     document.addEventListener('touchend', handleDocumentTouchEnd);
 }
 
-// ...existing code...
 function handleDocumentMouseMove(event) {
     if (!isDragging) return;
     if (!event) return;
