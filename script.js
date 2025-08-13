@@ -10,7 +10,7 @@ function shuffleArray(array) {
 // Word Game - 100 Levels
 // Levels are grouped by number of words to find per level.
 const levels = [
-    { id: 0, mainWord: 'STREAM', wordsToFind: ['stream', 'master', 'team', 'arm'] },
+    { id: 0, mainWord: 'STREAM', wordsToFind: ['stream', 'sat', 'team', 'rat'] },
     { id: 1, mainWord: 'BRIGHT', wordsToFind: ['bright', 'right', 'grit', 'bit'] },
     { id: 2, mainWord: 'GARDEN', wordsToFind: ['garden', 'range', 'dear', 'age'] },
     { id: 3, mainWord: 'THANKS', wordsToFind: ['thanks', 'thank', 'hats', 'ant'] },
