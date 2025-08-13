@@ -1,4 +1,4 @@
-// Utility function to shuffle an array (Fisher-Yates algorithm)
+// --- Shuffle Utility ---
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -7,8 +7,7 @@ function shuffleArray(array) {
     return array;
 }
 
-// Word Game - 100 Levels
-// Levels are grouped by number of words to find per level.
+// --- Level Data ---
 const levels = [
     { id: 0, mainWord: 'STREAM', wordsToFind: ['stream', 'sat', 'team', 'rat'] },
     { id: 1, mainWord: 'BRIGHT', wordsToFind: ['bright', 'right', 'grit', 'bit'] },
@@ -46,7 +45,7 @@ const levels = [
     { id: 32, mainWord: 'STATION', wordsToFind: ['station', 'nation', 'into', 'sit', 'ton'] },
     { id: 33, mainWord: 'COMFORT', wordsToFind: ['comfort', 'form', 'fort', 'cot', 'for'] },
     { id: 34, mainWord: 'WEATHER', wordsToFind: ['weather', 'wheat', 'wear', 'tea', 'ear'] },
-    { id: 35, mainWord: 'PERFECT', wordsToFind: ['perfect', 'free', 'tree', 'pet', 'cry'] },
+    { id: 35, mainWord: 'PERFECT', wordsToFind: ['perfect', 'free', 'tree', 'pet', 'pre'] },
     { id: 36, mainWord: 'QUICKLY', wordsToFind: ['quickly', 'quick', 'lick', 'luck'] },
     { id: 37, mainWord: 'CENTRAL', wordsToFind: ['central', 'rental', 'later', 'car', 'ten'] },
     { id: 38, mainWord: 'JOURNEY', wordsToFind: ['journey', 'jury', 'your', 'joy', 'run'] },
@@ -74,7 +73,7 @@ const levels = [
     { id: 59, mainWord: 'DELIVERY', wordsToFind: ['delivery', 'liver', 'live', 'lie', 'red', 'dry'] },
     
     { id: 60, mainWord: 'ADVENTURE', wordsToFind: ['adventure', 'venture', 'turn', 'dear', 'ear', 'vet', 'end'] },
-    { id: 61, mainWord: 'BREAKFAST', wordsToFind: ['breakfast', 'beast', 'fast', 'eat', 'bat', 'fed', 'art'] },
+    { id: 61, mainWord: 'BREAKFAST', wordsToFind: ['breakfast', 'beast', 'fast', 'eat', 'bat', 'are', 'art'] },
     { id: 62, mainWord: 'IMPORTANT', wordsToFind: ['important', 'import', 'point', 'tip', 'top', 'tar', 'ant'] },
     { id: 63, mainWord: 'CHRISTMAS', wordsToFind: ['christmas', 'march', 'charm', 'car', 'ham', 'sit', 'mix'] },
     { id: 64, mainWord: 'EDUCATION', wordsToFind: ['education', 'auction', 'cute', 'cat', 'cut', 'ice', 'and'] },
@@ -84,7 +83,7 @@ const levels = [
     { id: 68, mainWord: 'COMMUNITY', wordsToFind: ['community', 'county', 'mount', 'cut', 'cot', 'tin', 'mom'] },
     { id: 69, mainWord: 'WONDERFUL', wordsToFind: ['wonderful', 'wonder', 'lower', 'owl', 'led', 'end', 'fur'] },
     { id: 70, mainWord: 'DANGEROUS', wordsToFind: ['dangerous', 'dragon', 'road', 'dog', 'rag', 'son', 'and'] },
-    { id: 71, mainWord: 'DIFFERENT', wordsToFind: ['different', 'fierce', 'rent', 'ten', 'end', 'fit', 'red'] },
+    { id: 71, mainWord: 'DIFFERENT', wordsToFind: ['different', 'diet', 'rent', 'ten', 'end', 'fit', 'red'] },
     { id: 72, mainWord: 'MARKETING', wordsToFind: ['marketing', 'rating', 'make', 'mar', 'tag', 'tin', 'gin'] },
     { id: 73, mainWord: 'INTERVIEW', wordsToFind: ['interview', 'invite', 'wine', 'win', 'tin', 'vet', 'wet'] },
     { id: 74, mainWord: 'SOMETHING', wordsToFind: ['something', 'moth', 'them', 'him', 'got', 'son', 'ten'] },
@@ -99,7 +98,7 @@ const levels = [
     { id: 82, mainWord: 'REVOLUTION', wordsToFind: ['revolution', 'solution', 'love', 'oil', 'tin', 'ton', 'nut', 'let'] },
     { id: 83, mainWord: 'PHILOSOPHY', wordsToFind: ['philosophy', 'polish', 'ship', 'hip', 'shy', 'oil', 'soy', 'ply'] },
     { id: 84, mainWord: 'PROFESSION', wordsToFind: ['profession', 'poison', 'rope', 'for', 'son', 'sin', 'pen', 'sip'] },
-    { id: 85, mainWord: 'DEMOCRATIC', wordsToFind: ['democratic', 'dramatic', 'care', 'car', 'art', 'ice', 'dot', 'cot'] },
+    { id: 85, mainWord: 'DEMOCRATIC', wordsToFind: ['democratic', 'dart', 'care', 'cart', 'art', 'ice', 'car', 'cot'] },
     { id: 86, mainWord: 'INSTRUMENT', wordsToFind: ['instrument', 'mist', 'term', 'tin', 'sit', 'sun', 'run', 'net'] },
     { id: 87, mainWord: 'CREATIVE', wordsToFind: ['creative', 'create', 'eat', 'art', 'active', 'rate', 'car', 'ice'] },
     { id: 88, mainWord: 'RESTAURANT', wordsToFind: ['restaurant', 'nature', 'turn', 'tan', 'nut', 'ear', 'art', 'sun'] },
@@ -117,7 +116,7 @@ const levels = [
 ];
 
 
-// --- Game State ---
+// --- Game State and DOM Elements ---
 
 // Game state and DOM elements
 let currentLevelIndex = 0, selectedLetters = [], currentWord = '',
@@ -139,7 +138,7 @@ const canvasWrapper = $("canvas-wrapper"), gameView = $("game-view"),
 
 function getElementCenter(element) {
     if (!element || !element.offsetParent) {
-        return { x: 0, y: 0 }; // Return safe defaults
+        return { x: 0, y: 0 }; // Safe defaults if element is missing
     }
 
     const rect = element.getBoundingClientRect();
@@ -159,10 +158,7 @@ function getDistance(p1, p2) {
 
 // Function to draw lines on canvas
 function drawLine(startElement, endX, endY) {
-    if (!ctx || !connectionCanvas) {
-        console.error("Canvas context or element not ready for drawing.");
-        return;
-    }
+    if (!ctx || !connectionCanvas) return;
     
     ctx.clearRect(0, 0, connectionCanvas.width, connectionCanvas.height);
 
@@ -213,13 +209,10 @@ function showLevelSelectionView() {
 async function loadDictionary() {
     try {
         const response = await fetch('words.txt');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const text = await response.text();
         const words = text.split(/\r?\n/).map(word => word.trim().toLowerCase()).filter(word => word.length > 0 && /^[a-z]+$/.test(word));
         allValidWords = new Set(words);
-        console.log(`Main dictionary loaded with ${allValidWords.size} words.`);
         
         // Automated wordsToFind validation against the loaded comprehensive dictionary
         levels.forEach(level => {
